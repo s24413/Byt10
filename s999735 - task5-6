@@ -1,0 +1,281 @@
+#Group 1 - First
+import tkinter as tk
+from tkinter import messagebox
+
+def perform_calculation(operator):
+    try:
+        num1 = float(entry_num1.get())
+        num2 = float(entry_num2.get())
+
+        if operator == '+':
+            result = num1 + num2
+        elif operator == '-':
+            result = num1 - num2
+        elif operator == '*':
+            result = num1 * num2
+        elif operator == '/':
+            if num2 != 0:
+                result = num1 / num2
+            else:
+                messagebox.showerror("Error", "Division by zero is not allowed.")
+                return
+        else:
+            result = 0
+
+        entry_result.config(state="normal")
+        entry_result.delete(0, tk.END)
+        entry_result.insert(0, result)
+        entry_result.config(state="readonly")
+
+    except ValueError:
+        messagebox.showerror("Error", "Invalid input. Please enter valid numbers.")
+
+# Create the main window
+window = tk.Tk()
+window.title("Calculator")
+
+# Create entry widgets for numbers and result
+entry_num1 = tk.Entry(window, width=10)
+entry_num1.grid(row=0, column=0, padx=10, pady=10)
+
+entry_num2 = tk.Entry(window, width=10)
+entry_num2.grid(row=0, column=1, padx=10, pady=10)
+
+entry_result = tk.Entry(window, width=20, state="readonly")
+entry_result.grid(row=0, column=2, padx=10, pady=10)
+
+# Create buttons for operations
+buttons = [
+    ("+", 1, 3),
+    ("-", 2, 3),
+    ("*", 3, 3),
+    ("/", 4, 3),
+]
+
+for (operator, row, column) in buttons:
+    btn = tk.Button(window, text=operator, width=5, command=lambda op=operator: perform_calculation(op))
+    btn.grid(row=row, column=column, padx=5, pady=5)
+
+# Run the Tkinter event loop
+window.mainloop()
+
+
+
+##################################################################
+
+
+
+#Group1 - Second
+class Memento:
+    def __init__(self, state):
+        self._state = state
+
+    def get_state(self):
+        return self._state
+
+
+class Originator:
+    def __init__(self):
+        self._state = None
+
+    def set_state(self, state):
+        print(f"Setting state to: {state}")
+        self._state = state
+
+    def save_to_memento(self):
+        print("Saving state to Memento.")
+        return Memento(self._state)
+
+    def restore_from_memento(self, memento):
+        self._state = memento.get_state()
+        print(f"Restored state to: {self._state}")
+
+    def display_state(self):
+        print(f"Current State: {self._state}")
+
+
+class Caretaker:
+    def __init__(self):
+        self._mementos = []
+
+    def add_memento(self, memento):
+        self._mementos.append(memento)
+
+    def get_memento(self, index):
+        return self._mementos[index]
+
+
+def main():
+    # Creating objects
+    originator = Originator()
+    caretaker = Caretaker()
+
+    while True:
+        print("\nSelect an option:")
+        print("1. Set State")
+        print("2. Save State")
+        print("3. Restore State")
+        print("4. Display Current State")
+        print("5. Exit")
+
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == '5':
+            print("Exiting the program.")
+            break
+
+        if choice == '1':
+            state = input("Enter the new state: ")
+            originator.set_state(state)
+        elif choice == '2':
+            memento = originator.save_to_memento()
+            caretaker.add_memento(memento)
+            print("State saved.")
+        elif choice == '3':
+            index = int(input("Enter the index of the state to restore: "))
+            if 0 <= index < len(caretaker._mementos):
+                memento = caretaker.get_memento(index)
+                originator.restore_from_memento(memento)
+                print("State restored.")
+            else:
+                print("Invalid index.")
+        elif choice == '4':
+            originator.display_state()
+        else:
+            print("Invalid input. Please enter a valid choice.")
+
+if __name__ == "__main__":
+    main()
+
+
+########################################################################
+
+#Group2
+
+rom typing import List
+
+# Builder Pattern
+
+class MealBuilder:
+    def prepare_meal(self) -> 'Meal':
+        meal = Meal()
+        self.build_main_course(meal)
+        self.build_side(meal)
+        self.build_drink(meal)
+        return meal
+
+    def build_main_course(self, meal: 'Meal') -> None:
+        pass
+
+    def build_side(self, meal: 'Meal') -> None:
+        pass
+
+    def build_drink(self, meal: 'Meal') -> None:
+        pass
+
+
+class BurgerMealBuilder(MealBuilder):
+    def build_main_course(self, meal: 'Meal') -> None:
+        meal.add_item(Burger())
+
+    def build_side(self, meal: 'Meal') -> None:
+        meal.add_item(Fries())
+
+    def build_drink(self, meal: 'Meal') -> None:
+        meal.add_item(Cola())
+
+
+class VeggieWrapMealBuilder(MealBuilder):
+    def build_main_course(self, meal: 'Meal') -> None:
+        meal.add_item(VeggieWrap())
+
+    def build_side(self, meal: 'Meal') -> None:
+        meal.add_item(Salad())
+
+    def build_drink(self, meal: 'Meal') -> None:
+        meal.add_item(Water())
+
+
+# Template Method Pattern
+
+class Meal:
+    def __init__(self):
+        self.items: List['MainCourse'] = []
+
+    def add_item(self, item: 'MainCourse') -> None:
+        self.items.append(item)
+
+    def display_items(self) -> None:
+        for item in self.items:
+            print(f"- {item.name}")
+
+
+class MainCourse:
+    name: str = ""
+
+
+class Burger(MainCourse):
+    name: str = "Burger"
+
+
+class VeggieWrap(MainCourse):
+    name: str = "Veggie Wrap"
+
+
+class Side:
+    name: str = ""
+
+
+class Fries(Side):
+    name: str = "Fries"
+
+
+class Salad(Side):
+    name: str = "Salad"
+
+
+class Drink:
+    name: str = ""
+
+
+class Cola(Drink):
+    name: str = "Cola"
+
+
+class Water(Drink):
+    name: str = "Water"
+
+
+# Client Code
+
+def prepare_and_display_meal(builder: 'MealBuilder') -> None:
+    meal = builder.prepare_meal()
+    print("\nPreparing meal:")
+    meal.display_items()
+
+
+if __name__ == "__main__":
+    print("Welcome to the Meal Builder!")
+    print("Choose a meal:")
+    print("1. Burger Meal")
+    print("2. Veggie Wrap Meal")
+
+    choice = input("Enter your choice (1 or 2): ")
+
+    if choice == '1':
+        meal_builder = BurgerMealBuilder()
+    elif choice == '2':
+        meal_builder = VeggieWrapMealBuilder()
+    else:
+        print("Invalid choice. Exiting.")
+        exit()
+
+    prepare_and_display_meal(meal_builder)
+
+
+
+
+
+
+
+
